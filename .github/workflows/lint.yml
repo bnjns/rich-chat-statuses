@@ -41,6 +41,12 @@ jobs:
         with:
           go-version-file: ${{ matrix.module }}/go.mod
           cache-dependency-path: ${{ matrix.module }}/go.sum
+      - name: Set up workspace
+        working-directory: ${{ matrix.module }}
+        run: |
+          go work init
+          echo '${{ needs.detect-modules.outputs.modules }}' | jq -r '.[]' | while read -r module; do go work use "$(realpath "$(git rev-parse --show-toplevel)/${module}")"; done
+          go mod tidy
       - uses: golangci/golangci-lint-action@v8
         with:
           version: latest
