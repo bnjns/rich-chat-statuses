@@ -1,0 +1,82 @@
+site_name: Rich Chat Statuses
+site_url: !ENV [SITE_URL, '']
+docs_dir: docs
+use_directory_urls: false
+
+repo_name: bnjns/rich-chat-statuses
+repo_url: https://github.com/bnjns/rich-chat-statuses
+
+copyright: Copyright &copy; 2025 Ben Jones
+
+exclude_docs: |
+  */_template.md
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.indexes
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+    - toc.integrate
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tilde
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - index.md
+  - Getting Started:
+      - usage/programmatically.md
+      - usage/standalone.md
+  - Calendars:
+      - calendars/index.md
+      - calendars/google.md
+  - Clients:
+      - clients/index.md
+      - clients/slack.md
+  - Reference:
+      - reference/status-presets.md

@@ -2,11 +2,17 @@ install-asdf:
   asdf plugin add golang python
   asdf install
 
-install: install-asdf
+install-docs:
+  pip install mkdocs-material
+
+install: install-asdf install-docs
 
 [working-directory: 'cmd']
 run-cmd:
   go run .
+
+run-docs:
+  mkdocs serve
 
 build-cmd:
   go build -C cmd -o dist/rich-chat-statuses

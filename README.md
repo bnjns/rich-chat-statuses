@@ -85,12 +85,19 @@ To run the standalone binary manually:
 just run-cmd
 ```
 
+### Running the documentation
+
+```sh
+just run-docs
+```
+
 ## ⛏️ Built Using
 
 - [apex/log](https://github.com/apex/log)
 - [Google Calendar API](https://github.com/googleapis/google-api-go-client)
 - [Slack Web API](https://github.com/slack-go/slack)
 - [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2)
+- [MkDocs](https://www.mkdocs.org/) and [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 
 ## ✍️ Authors
 
