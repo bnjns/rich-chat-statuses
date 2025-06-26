@@ -1,0 +1,47 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - '.github/workflows/lint.yml'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  detect-modules:
+    name: Detect Modules
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.set-modules.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-modules
+        run: echo "modules=$(jq -c -n '$ARGS.positional' --args $(find . -name go.mod -exec dirname "{}" \;))" >> $GITHUB_OUTPUT
+
+  lint:
+    name: Lint
+    needs: [detect-modules]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ matrix.module }}/go.mod
+          cache-dependency-path: ${{ matrix.module }}/go.sum
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+          working-directory: ${{ matrix.module }}
