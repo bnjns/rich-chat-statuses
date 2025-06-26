@@ -1,0 +1,62 @@
+name: 🐛 Report a Bug
+description: If something isn't working as expected.
+labels:
+  - type/bug
+body:
+  - type: checkboxes
+    attributes:
+      label: Confirm there isn't an existing issue for this
+      description: Please search to see if an issue already exists for the bug you encountered
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - id: description
+    type: textarea
+    attributes:
+      label: Description
+      description: |
+        Provide a clear and concise description of what the bug is.
+        
+        To make it easier to understand, be as specific as you can.
+    validations:
+      required: true
+  - id: expected-behaviour
+    type: textarea
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - id: actual-behaviour
+    type: textarea
+    attributes:
+      label: Actual behaviour
+      description: What actually happened?
+    validations:
+      required: true
+  - id: steps-to-reproduce
+    type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: List the steps required to reproduce the issue
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - id: version
+    type: input
+    attributes:
+      label: Version
+      description: What version of the app are you using?
+  - id: context
+    type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any additional context that might be useful here.
+
+        Eg, how are you running this? Which integrations do you have configured?
+    validations:
+      required: false
