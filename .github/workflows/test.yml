@@ -1,0 +1,108 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  detect-modules:
+    name: Detect Modules
+    runs-on: ubuntu-latest
+    outputs:
+      calendars: ${{ steps.find-modules.outputs.calendars }}
+      clients: ${{ steps.find-modules.outputs.clients }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - id: find-modules
+        run: |
+          echo "calendars=$(jq -c -n '$ARGS.positional' --args $(find calendars -name go.mod -exec dirname "{}" \;))" >> $GITHUB_OUTPUT
+          echo "clients=$(jq -c -n '$ARGS.positional' --args $(find clients -name go.mod -exec dirname "{}" \;))" >> $GITHUB_OUTPUT
+
+  binary:
+    name: Standalone Binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: cmd/go.mod
+          cache-dependency-path: cmd/go.sum
+      - run: go test -v ./...
+        working-directory: cmd
+
+  calendars:
+    name: Calendars
+    needs: detect-modules
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        calendar: ${{ fromJSON(needs.detect-modules.outputs.calendars) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ matrix.calendar }}/go.mod
+          cache-dependency-path: ${{ matrix.calendar }}/go.sum
+      - run: go test -v ./...
+        working-directory: ${{ matrix.calendar }}
+
+  clients:
+    name: Clients
+    needs: detect-modules
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        client: ${{ fromJSON(needs.detect-modules.outputs.calendars) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ matrix.client }}/go.mod
+          cache-dependency-path: ${{ matrix.client }}/go.sum
+      - run: go test -v ./...
+        working-directory: ${{ matrix.client }}
+
+  module:
+    name: Module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go test -v ./...
+
+  docker-image:
+    name: Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - name: Set up builder
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          platforms: linux/amd64,linux/arm64
+          file: Dockerfile
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
